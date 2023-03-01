@@ -1,5 +1,5 @@
-# ChatGpt Clone Web App
-This is a web application that clones the ChatGpt functionality using OpenAI API.
+# ChatGPT Clone Web App Using Open AI API
+This is a web application that clones the ChatGPT functionality using OpenAI API.
 
 # Features
 Allows users to chat with an AI-powered virtual assistant.
