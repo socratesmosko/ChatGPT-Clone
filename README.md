@@ -1,4 +1,4 @@
-# ChatGPT Clone Web App Using Open AI's API and ViteJS
+# ChatGPT Clone Web Application Using Open AI’s API and ViteJS
 This is a web application that clones the ChatGPT functionality using OpenAI's API.
 
 # Features
