@@ -1,0 +1,19 @@
+{
+  "name": "chatgpt-clone-socrates-mosko",
+  "version": "1.0.0",
+  "description": "This is a web application that clones the ChatGPT functionality using OpenAI's API.",
+  "main": "start.js",
+  "type": "module",
+  "devDependencies": {},
+  "scripts": {
+    "dev": "nodemon start.js",
+    "start": "node start.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "nodemon": "^2.0.20",
+    "openai": "^3.1.0"
+  }
+}

@@ -17,6 +17,7 @@ Technologies Used:
 
 To start this application run:
 
+### `npm i`
 ### `npm run dev`
 
 Open the localhost url (will appear in the terminal) to view it in your browser.
