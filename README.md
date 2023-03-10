@@ -20,3 +20,6 @@ This is a web application that clones the ChatGPT functionality using OpenAI's A
 To start this application, run the following command:
 - `npm install`
 - `npm run dev`
+
+### Get the API Key
+To get the API key, you need to create an account on OpenAI's website. You can do that [here](https://platform.openai.com/account/api-keys).
