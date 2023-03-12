@@ -59,7 +59,6 @@ async function handleSubmit(e) {
     chatContainer.innerHTML += chatStripe(true, '', uniqueId);
 
     const messageDiv = document.getElementById(uniqueId);
-    console.log(messageDiv);
 
     // Show loading indicator
     loader(messageDiv);
