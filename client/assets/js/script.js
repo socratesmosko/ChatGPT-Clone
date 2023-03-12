@@ -91,10 +91,10 @@ const handleSubmit = async (e) => {
         body: JSON.stringify({
             prompt: data.get('prompt')
         })
-    })
+    });
 
     clearInterval(loadInterval)
-    messageDiv.innerHTML = " "
+    messageDiv.innerHTML = " ";
 
     if (response.ok) {
         const data = await response.json();
@@ -102,10 +102,8 @@ const handleSubmit = async (e) => {
 
         typeText(messageDiv, parsedData)
     } else {
-        const err = await response.text()
-
-        messageDiv.innerHTML = "Something went wrong"
-        alert(err)
+        const err = await (await response.text()).trim();
+        messageDiv.innerHTML = err;
     }
 }
 
