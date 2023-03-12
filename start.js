@@ -1,4 +1,2 @@
 console.clear();
-import { startServer } from './server/server.js';
-
-startServer();
+import app from './server/server.js';
