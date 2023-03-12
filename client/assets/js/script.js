@@ -1,16 +1,19 @@
-const form = document.querySelector('form')
-const chatContainer = document.querySelector('#chat_container')
-
+const form = document.querySelector('form');
+const chatContainer = document.querySelector('#chat_container');
 let loadInterval;
 
+function generateUniqueId() {
+    const timestamp = Date.now();
+    const randomNumber = Math.random();
+    const hexadecimalString = randomNumber.toString(16);
+    return `id-${timestamp}-${hexadecimalString}`;
+}
+
 function loader(element) {
-    element.textContent = ''
-
+    clearInterval(loadInterval);
+    element.textContent = '';
     loadInterval = setInterval(() => {
-        // Update the text content of the loading indicator
         element.textContent += '.';
-
-        // If the loading indicator has reached three dots, reset it
         if (element.textContent === '....') {
             element.textContent = '';
         }
@@ -18,98 +21,97 @@ function loader(element) {
 }
 
 function typeText(element, text) {
-    let index = 0
-
-    let interval = setInterval(() => {
-        if (index < text.length) {
-            element.innerHTML += text.charAt(index)
-            index++
-        } else {
-            clearInterval(interval)
+    let index = 0;
+    const intervalId = setInterval(() => {
+        if (index >= text.length) {
+            clearInterval(intervalId);
+            return;
         }
-    }, 20)
-}
-
-// generate unique ID for each message div of bot
-// necessary for typing text effect for that specific reply
-// without unique ID, typing text will work on every element
-function generateUniqueId() {
-    const timestamp = Date.now();
-    const randomNumber = Math.random();
-    const hexadecimalString = randomNumber.toString(16);
-
-    return `id-${timestamp}-${hexadecimalString}`;
+        element.innerHTML += text.charAt(index);
+        index++;
+    }, 30);
 }
 
 function chatStripe(isAi, value, uniqueId) {
-    return (
-        `
-    <div class="wrapper ${isAi && 'ai'}">
-        <div class="chat">
-            <div class="profile">
-                <img 
-                  src="/public/assets/${isAi ? 'bot' : 'user'}.svg"
-                  alt="${isAi ? 'bot' : 'user'}"
-                />
-            </div>
-            <div class="message" id=${uniqueId}>${value}</div>
+    return `
+    <div class="wrapper ${isAi ? 'ai' : ''}">
+      <div class="chat">
+        <div class="profile">
+          <img src="/public/assets/${isAi ? 'bot' : 'user'}.svg" alt="${isAi ? 'bot' : 'user'}" />
         </div>
+        <div class="message" id="${uniqueId}">${value}</div>
+      </div>
     </div>
-`
-    )
+  `;
 }
 
-const handleSubmit = async (e) => {
-    e.preventDefault()
+async function handleSubmit(e) {
+    e.preventDefault();
+    const data = new FormData(form);
+    const prompt = data.get('prompt');
 
-    const data = new FormData(form)
+    // Add user's chatstripe
+    chatContainer.innerHTML += chatStripe(false, prompt);
+    form.reset();
 
-    // user's chatstripe
-    chatContainer.innerHTML += chatStripe(false, data.get('prompt'))
+    // Add bot's chatstripe
+    const uniqueId = generateUniqueId();
+    chatContainer.innerHTML += chatStripe(true, '', uniqueId);
 
-    // to clear the textarea input 
-    form.reset()
+    const messageDiv = document.getElementById(uniqueId);
+    console.log(messageDiv);
 
-    // bot's chatstripe
-    const uniqueId = generateUniqueId()
-    chatContainer.innerHTML += chatStripe(true, " ", uniqueId)
+    // Show loading indicator
+    loader(messageDiv);
 
-    // to focus scroll to the bottom 
-    chatContainer.scrollTop = chatContainer.scrollHeight;
+    try {
+        const response = await fetch('/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ prompt }),
+        });
+        clearInterval(loadInterval);
+        messageDiv.innerHTML = '';
 
-    // specific message div 
-    const messageDiv = document.getElementById(uniqueId)
+        if (response.ok) {
+            const data = await response.json();
+            const parsedData = data.bot.trim(); // trims any trailing spaces/'\n'
 
-    // messageDiv.innerHTML = "..."
-    loader(messageDiv)
-
-    const response = await fetch('/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            prompt: data.get('prompt')
-        })
-    });
-
-    clearInterval(loadInterval)
-    messageDiv.innerHTML = " ";
-
-    if (response.ok) {
-        const data = await response.json();
-        const parsedData = data.bot.trim() // trims any trailing spaces/'\n' 
-
-        typeText(messageDiv, parsedData)
-    } else {
-        const err = await (await response.text()).trim();
-        messageDiv.innerHTML = err;
+            // add delay before typing out bot's response
+            setTimeout(() => {
+                typeText(messageDiv, parsedData);
+            }, 1000); // adjust delay time as needed
+        } else {
+            const err = (await response.text()).trim();
+            setTimeout(() => {
+                typeText(messageDiv, err);
+            }, 1000);
+        }
+    } catch (err) {
+        console.error(err);
+        clearInterval(loadInterval);
+        messageDiv.innerHTML = '';
+        typeText(messageDiv, 'Sorry, an error occurred. Please try again later.');
     }
+
+    chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
-form.addEventListener('submit', handleSubmit)
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    const prompt = data.get('prompt');
+    if (prompt.trim() !== '') {
+        handleSubmit(e);
+    }
+});
 form.addEventListener('keyup', (e) => {
     if (e.keyCode === 13) {
-        handleSubmit(e)
+        const prompt = e.target.value.trim();
+        if (prompt !== '') {
+            handleSubmit(e);
+        }
     }
 })
