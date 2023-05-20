@@ -8,7 +8,6 @@ Features a clean and modern user interface that is easy to use.
 
 ![gptclonescreenshot](https://user-images.githubusercontent.com/119309614/222011376-1fe19a5e-f8d1-4d5f-8869-42ff61e02b90.png)
 
-![image](https://github.com/socratesmosko/ChatGPT-Clone/assets/119309614/58960c41-3005-4408-a975-456ef6964894)
 
 Technologies Used:
 - Vite.js
